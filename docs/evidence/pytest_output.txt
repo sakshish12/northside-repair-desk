@@ -1,6 +1,6 @@
 # Empirical validation run
 
-Generated (UTC): 2026-05-24T13:28:11Z
+Generated (UTC): 2026-05-24T14:58:43Z
 
 ```
 ============================= test session starts ==============================
@@ -27,6 +27,6 @@ tests/test_overlap.py::test_partial_overlap PASSED                       [ 84%]
 tests/test_overlap.py::test_touching_endpoints_do_not_overlap PASSED     [ 92%]
 tests/test_overlap.py::test_adjacent_before_no_overlap PASSED            [100%]
 
-============================== 13 passed in 0.19s ==============================
+============================== 13 passed in 0.14s ==============================
 
 ```
