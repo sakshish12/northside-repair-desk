@@ -1,0 +1,352 @@
+:root {
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  line-height: 1.55;
+  color: #1c2834;
+  --bg: #eef2f6;
+  --surface: #ffffff;
+  --accent: #0f6e56;
+  --accent-dark: #0a5240;
+  --accent-soft: #e3f2ed;
+  --muted: #5a6b7d;
+  --border: #d8e0e8;
+  --shadow: 0 8px 28px rgba(15, 40, 60, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(165deg, #e8eef4 0%, #f5f7fa 45%, #e9f0ec 100%);
+  min-height: 100vh;
+}
+
+#root {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 3rem;
+}
+
+.hero {
+  background: linear-gradient(135deg, #0f6e56 0%, #134e6f 100%);
+  color: #fff;
+  border-radius: 16px;
+  padding: 1.75rem 1.75rem 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.hero-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.18);
+  padding: 0.25rem 0.55rem;
+  border-radius: 4px;
+  margin-bottom: 0.65rem;
+}
+
+.hero h1 {
+  margin: 0 0 0.5rem;
+  font-size: 1.85rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.hero-lead {
+  margin: 0 0 0.75rem;
+  font-size: 1.05rem;
+  opacity: 0.95;
+  max-width: 42rem;
+}
+
+.hero-desc {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  opacity: 0.88;
+  max-width: 44rem;
+}
+
+.hero-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.1rem;
+}
+
+.hero-pills span {
+  font-size: 0.78rem;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  margin: 0 0 0.35rem;
+  color: #1c2834;
+}
+
+.section-sub {
+  margin: 0 0 1rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.25rem 1.35rem;
+  box-shadow: var(--shadow);
+  margin-bottom: 1.25rem;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.75rem;
+}
+
+.service-card {
+  background: var(--accent-soft);
+  border: 1px solid #c5e0d6;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+}
+
+.service-card h3 {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  color: var(--accent-dark);
+}
+
+.service-card p {
+  margin: 0 0 0.5rem;
+  font-size: 0.82rem;
+  color: #3d5248;
+  line-height: 1.45;
+}
+
+.service-card .duration {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  font-size: 0.88rem;
+  color: #2a3a4a;
+}
+
+.hint {
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin: -0.2rem 0 0.5rem;
+}
+
+select,
+input,
+button {
+  font: inherit;
+}
+
+select,
+input {
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  margin-bottom: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fafbfc;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+select:focus,
+input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(15, 110, 86, 0.15);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 0.65rem 1.25rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-dark);
+}
+
+.btn-primary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--accent-dark);
+  border: 1px solid #b8d4ca;
+  padding: 0.35rem 0.65rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.btn-ghost:hover {
+  background: var(--accent-soft);
+}
+
+.error {
+  color: #8b1a2a;
+  background: #fdeef0;
+  border: 1px solid #f5c6ce;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.success {
+  color: #0d5c2e;
+  background: #e8f6ee;
+  border: 1px solid #b8e0c8;
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+ul.appointments {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.appointment-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.appointment-item:last-child {
+  border-bottom: none;
+}
+
+.appointment-meta {
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.appointment-meta strong {
+  color: #1c2834;
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+.status {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.45rem;
+  border-radius: 4px;
+}
+
+.status-confirmed {
+  background: #e3f2ed;
+  color: var(--accent-dark);
+}
+
+.status-cancelled {
+  background: #f0f2f5;
+  color: #6b7280;
+}
+
+.empty-state {
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 0.5rem 0;
+}
+
+.datetime-field {
+  margin-bottom: 0.5rem;
+}
+
+.datetime-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.datetime-row input {
+  flex: 1;
+  margin-bottom: 0.35rem;
+}
+
+.btn-okay {
+  flex-shrink: 0;
+  align-self: flex-start;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.88rem;
+  min-height: 42px;
+}
+
+.btn-okay:hover:not(:disabled) {
+  background: var(--accent-dark);
+}
+
+.btn-okay:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.datetime-confirmed {
+  margin: 0 0 0.75rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.datetime-confirmed strong {
+  color: var(--accent-dark);
+}
+
+.datetime-pending {
+  color: #9a6b2f;
+  font-style: italic;
+}
+
+.toast-dismiss {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.75rem;
+  opacity: 0.75;
+}

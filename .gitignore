@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+*.db
+backend/test_northside.db
+backend/northside.db
+node_modules/
+frontend/dist/
+.DS_Store
