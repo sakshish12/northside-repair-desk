@@ -214,6 +214,27 @@ export default function App() {
           Typical jobs we schedule. Duration guides the end time when you pick a service below.
         </p>
         <div className="services-grid">
+          {services.length === 0 && (
+            <p className="empty-state">
+              Loading shop services… If this stays empty, check that the API is running and try{" "}
+              <button
+                type="button"
+                className="btn-ghost"
+                onClick={async () => {
+                  try {
+                    const s = await seed();
+                    setSummary(s);
+                    await refresh(s.business_id);
+                  } catch (e) {
+                    setError(e instanceof Error ? e.message : "Could not load services.");
+                  }
+                }}
+              >
+                reload demo data
+              </button>
+              .
+            </p>
+          )}
           {services.map((svc) => (
             <article key={svc.id} className="service-card">
               <h3>{svc.name}</h3>

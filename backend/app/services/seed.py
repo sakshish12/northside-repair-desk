@@ -1,7 +1,8 @@
-from sqlalchemy import inspect, select, text
+from sqlalchemy import delete, inspect, select, text
 from sqlalchemy.orm import Session
 
 from app.core.database import engine
+from app.models.appointment import Appointment
 from app.models.business import Business
 from app.models.customer import Customer
 from app.models.resource import Resource
@@ -49,6 +50,16 @@ DEMO_SERVICES = [
         "description": "Inspection, dry-out advice, and honest go/no-go on recovery.",
         "duration_minutes": 30,
     },
+    {
+        "name": "Data backup & transfer",
+        "description": "Backup photos and contacts before repair; restore after work is complete.",
+        "duration_minutes": 40,
+    },
+    {
+        "name": "Software & setup check",
+        "description": "Updates, account sign-in help, and basic performance tune-up after repair.",
+        "duration_minutes": 35,
+    },
 ]
 
 DEMO_CUSTOMERS = [
@@ -70,77 +81,72 @@ def _ensure_description_columns() -> None:
                 conn.execute(text(f"ALTER TABLE {table} ADD COLUMN {col} VARCHAR(500)"))
 
 
+def _canonical_business(db: Session) -> Business:
+    """One Northside tenant; remove duplicate rows from older seeds."""
+    rows = list(
+        db.scalars(select(Business).where(Business.name == NORTHSIDE_NAME).order_by(Business.id))
+    )
+    if not rows:
+        business = Business(name=NORTHSIDE_NAME, timezone="UTC")
+        db.add(business)
+        db.flush()
+        return business
+
+    keep = rows[0]
+    for duplicate in rows[1:]:
+        db.execute(delete(Appointment).where(Appointment.business_id == duplicate.id))
+        db.execute(delete(Service).where(Service.business_id == duplicate.id))
+        db.execute(delete(Resource).where(Resource.business_id == duplicate.id))
+        db.execute(delete(Customer).where(Customer.business_id == duplicate.id))
+        db.delete(duplicate)
+    db.flush()
+    return keep
+
+
+def _sync_by_name(
+    db: Session,
+    business_id: str,
+    model,
+    demo_items: list[dict],
+    *,
+    match_key: str = "name",
+) -> list:
+    """Upsert demo rows by name and remove stale catalog entries."""
+    existing = list(db.scalars(select(model).where(model.business_id == business_id)))
+    by_key = {getattr(row, match_key): row for row in existing}
+    demo_keys = {item[match_key] for item in demo_items}
+    synced: list = []
+
+    for item in demo_items:
+        key = item[match_key]
+        row = by_key.get(key)
+        if row is None:
+            row = model(business_id=business_id, **item)  # type: ignore[arg-type]
+            db.add(row)
+        else:
+            for field, value in item.items():
+                setattr(row, field, value)
+        synced.append(row)
+
+    for row in existing:
+        if getattr(row, match_key) not in demo_keys:
+            db.delete(row)
+
+    db.flush()
+    return synced
+
+
 def _apply_demo_catalog(db: Session, business_id: str) -> tuple[list[Resource], list[Service], list[Customer]]:
-    resources = list(db.scalars(select(Resource).where(Resource.business_id == business_id)))
-    services = list(db.scalars(select(Service).where(Service.business_id == business_id)))
-    customers = list(db.scalars(select(Customer).where(Customer.business_id == business_id)))
-
-    if not resources:
-        resources = [
-            Resource(business_id=business_id, **item)  # type: ignore[arg-type]
-            for item in DEMO_RESOURCES
-        ]
-        db.add_all(resources)
-    else:
-        for i, row in enumerate(resources[: len(DEMO_RESOURCES)]):
-            data = DEMO_RESOURCES[i]
-            row.name = data["name"]
-            row.kind = data["kind"]
-            row.description = data["description"]
-        for item in DEMO_RESOURCES[len(resources) :]:
-            resources.append(Resource(business_id=business_id, **item))  # type: ignore[arg-type]
-            db.add(resources[-1])
-
-    if not services:
-        services = [
-            Service(business_id=business_id, **item)  # type: ignore[arg-type]
-            for item in DEMO_SERVICES
-        ]
-        db.add_all(services)
-    else:
-        for i, row in enumerate(services[: len(DEMO_SERVICES)]):
-            data = DEMO_SERVICES[i]
-            row.name = data["name"]
-            row.description = data["description"]
-            row.duration_minutes = data["duration_minutes"]
-        for item in DEMO_SERVICES[len(services) :]:
-            services.append(Service(business_id=business_id, **item))  # type: ignore[arg-type]
-            db.add(services[-1])
-
-    if not customers:
-        customers = [Customer(business_id=business_id, **item) for item in DEMO_CUSTOMERS]
-        db.add_all(customers)
-    else:
-        for i, row in enumerate(customers[: len(DEMO_CUSTOMERS)]):
-            data = DEMO_CUSTOMERS[i]
-            row.name = data["name"]
-            row.email = data["email"]
-        for item in DEMO_CUSTOMERS[len(customers) :]:
-            customers.append(Customer(business_id=business_id, **item))
-            db.add(customers[-1])
-
+    resources = _sync_by_name(db, business_id, Resource, DEMO_RESOURCES)
+    services = _sync_by_name(db, business_id, Service, DEMO_SERVICES)
+    customers = _sync_by_name(db, business_id, Customer, DEMO_CUSTOMERS)
     db.commit()
     return resources, services, customers
 
 
 def run_seed(db: Session) -> SeedSummary:
     _ensure_description_columns()
-
-    existing = db.scalar(select(Business).where(Business.name == NORTHSIDE_NAME))
-    if existing:
-        resources, services, customers = _apply_demo_catalog(db, existing.id)
-        return SeedSummary(
-            business_id=existing.id,
-            business_name=existing.name,
-            resource_ids=[r.id for r in resources],
-            customer_ids=[c.id for c in customers],
-            service_ids=[s.id for s in services],
-        )
-
-    business = Business(name=NORTHSIDE_NAME, timezone="UTC")
-    db.add(business)
-    db.flush()
-
+    business = _canonical_business(db)
     resources, services, customers = _apply_demo_catalog(db, business.id)
 
     return SeedSummary(

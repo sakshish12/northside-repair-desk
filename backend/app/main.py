@@ -5,12 +5,15 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api import appointments, catalog
 from app.core.config import settings
-from app.core.database import init_db
+from app.core.database import SessionLocal, init_db
+from app.services.seed import run_seed
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
+    with SessionLocal() as db:
+        run_seed(db)
     yield
 
 
